@@ -1,0 +1,111 @@
+
+eximmart/
+│
+├── app.py                   
+├── requirements.txt
+├── templates/
+│   ├── admin/
+│   │   └── dashboard.html
+│   ├── user/
+│   │   └── profile.html
+│   ├── products/
+│   │   └── list.html
+│   └── orders/
+│   │    └── order_list.html
+│   │── index.html
+│   │   navbar.html
+│   │   base.html
+│   │   login.html
+│   │   register.html
+│   │   about_us.html
+│   │   contact_us.html
+│   │   privacy_policy.html
+│   │   terms_and_conditions.html
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── admin/
+│   └── admin.py
+├── user/
+│   └── user.py
+├── configuration/
+│   └── config.py
+├── products/
+│   └── product.py
+├── orders/
+│   └── order.py
+├── database/
+│   └── db_connect.py
+├── utils/
+│   └── helpers.py
+├── logs/
+│   └── app.log
+└── dashboard/
+    ├── __init__.py
+    └── dashboard.py
+
+
+
+
+# ফোল্ডারগুলো তৈরি করো (যদি না থাকে)
+mkdir templates, templates\admin, templates\user, templates\products, templates\orders, static, static\css, static\js, static\images, admin, user, configuration, products, orders, database, utils, logs, dashboard -Force
+
+# ফাইলগুলো তৈরি করো (যদি আগে থেকে থাকে, তাহলে ওভাররাইট করবে)
+"" | Out-File -Encoding utf8 templates\admin\dashboard.html -Force
+"" | Out-File -Encoding utf8 templates\user\profile.html -Force
+"" | Out-File -Encoding utf8 templates\products\list.html -Force
+"" | Out-File -Encoding utf8 templates\orders\order_list.html -Force
+
+"" | Out-File -Encoding utf8 admin\admin.py -Force
+"" | Out-File -Encoding utf8 user\user.py -Force
+"" | Out-File -Encoding utf8 configuration\config.py -Force
+"" | Out-File -Encoding utf8 products\product.py -Force
+"" | Out-File -Encoding utf8 orders\order.py -Force
+"" | Out-File -Encoding utf8 database\db_connect.py -Force
+"" | Out-File -Encoding utf8 utils\helpers.py -Force
+"" | Out-File -Encoding utf8 logs\app.log -Force
+"" | Out-File -Encoding utf8 dashboard\__init__.py -Force
+"" | Out-File -Encoding utf8 dashboard\dashboard.py -Force
+"" | Out-File -Encoding utf8 app.py -Force
+"" | Out-File -Encoding utf8 requirements.txt -Force
+"" | Out-File -Encoding utf8 templates\login.html -Force
+"" | Out-File -Encoding utf8 templates\register.html -Force
+"" | Out-File -Encoding utf8 templates\about_us.html -Force
+"" | Out-File -Encoding utf8 templates\contact_us.html -Force
+"" | Out-File -Encoding utf8 templates\privacy_policy.html -Force
+"" | Out-File -Encoding utf8 templates\terms_and_conditions.html -Force
+
+
+"" | Out-File -Encoding utf8 templates\products\mobile-phones.html -Force
+"" | Out-File -Encoding utf8 templates\products\gadgets.html -Force
+"" | Out-File -Encoding utf8 templates\products\computers-laptops.html -Force
+"" | Out-File -Encoding utf8 templates\products\plastics-homeware.html -Force
+"" | Out-File -Encoding utf8 templates\products\toys-kids.html -Force
+"" | Out-File -Encoding utf8 templates\products\home-decor.html -Force
+"" | Out-File -Encoding utf8 templates\products\lighting.html -Force
+"" | Out-File -Encoding utf8 templates\products\farming-tools.html -Force
+"" | Out-File -Encoding utf8 templates\products\kitchen-appliances.html -Force
+"" | Out-File -Encoding utf8 templates\products\fitness-sports.html -Force
+"" | Out-File -Encoding utf8 templates\products\health-care.html -Force
+"" | Out-File -Encoding utf8 templates\products\office-school.html -Force
+"" | Out-File -Encoding utf8 templates\products\vehicle-accessories.html -Force
+"" | Out-File -Encoding utf8 templates\products\fashion-wear.html -Force
+"" | Out-File -Encoding utf8 templates\products\beauty-cosmetics.html -Force
+
+#folder make
+mkdir static\images\products\mobile-phones
+mkdir static\images\products\gadgets
+mkdir static\images\products\computers-laptops
+mkdir static\images\products\plastics-homeware
+mkdir static\images\products\toys-kids
+mkdir static\images\products\home-decor
+mkdir static\images\products\lighting
+mkdir static\images\products\farming-tools
+mkdir static\images\products\kitchen-appliances
+mkdir static\images\products\fitness-sports
+mkdir static\images\products\health-care
+mkdir static\images\products\office-school
+mkdir static\images\products\vehicle-accessories
+mkdir static\images\products\fashion-wear
+mkdir static\images\products\beauty-cosmetics

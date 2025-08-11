@@ -1,0 +1,639 @@
+/* === Body & Global Styles === */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0 !important;
+}
+h2 {
+  color: #f54a00;
+}
+/* === NAV BAR START=== */
+#topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f54a00;
+  color: white;
+  z-index: 1060;
+  padding: 0.25rem 1rem;
+  box-shadow: 0 2px 6px rgba(245, 74, 0, 0.7);
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  transition: top 0.3s ease;
+}
+
+#topbar form {
+  min-width: 280px;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+#topbar input[type="search"] {
+  max-width: 200px;
+  margin-right: 0.5rem;
+}
+
+#topbar label.btn {
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+#topbar .form-select {
+  background-color: #444;
+  color: white;
+  border: none;
+  width: 40px;  /* ছোট করা হয়েছে */
+  padding: 0 0.25rem;
+  /* margin-right: 1rem;  - এটা বাদ দিলাম কারণ gap দিয়ে spacing দেব */
+}
+
+#topbar .form-select option {
+  background-color: white;
+  color: black;
+}
+
+/* মোবাইল নম্বর সরানো */
+#topbar .d-lg-block {
+  display: none !important;
+}
+
+/* Cart + Language + Social একসাথে রাখার জন্য ফ্লেক্স ও গ্যাপ */
+#topbar > div.d-flex.align-items-center {
+  gap: 1rem;
+  /* margin-right: 0; চাইলে দিতে পারো */
+}
+
+#topbar > div.d-flex.align-items-center > div, 
+#topbar > div.d-flex.align-items-center > select,
+#topbar > div.d-flex.align-items-center > div > a {
+  /* ইনডিভিজুয়ালি দরকার হলে স্টাইল দাও */
+}
+
+#topbar > div.d-flex.align-items-center > div.d-flex {
+  gap: 0.5rem; /* Social icons এর মধ্যে একটু স্পেস */
+}
+
+#topbar > div.d-flex.align-items-center > div.text-white {
+  font-weight: 600;
+  font-size: 1.1rem;
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+#cart-count {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+#topbar a {
+  color: white;
+  margin-left: 0.75rem;
+  text-decoration: none;
+}
+
+#topbar a:hover {
+  color: #ddd;
+}
+
+/* Hide contact number on smaller screens */
+@media (max-width: 991px) {
+  #topbar form {
+    min-width: 200px;
+    margin-right: 0.5rem;
+  }
+  .navbar .d-lg-block {
+    display: none !important;
+  }
+}
+
+/* Smallest screens */
+@media (max-width: 575px) {
+  #topbar form input[type="search"] {
+    max-width: 100px;
+  }
+  #topbar .form-select {
+    width: 40px; /* একই রাখা হলো */
+    margin-right: 0.5rem;
+  }
+  #topbar > div.d-flex.align-items-center.text-white.me-3 {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+  }
+}
+
+/* === Main Navbar styles === */
+#mainNavbar {
+  position: relative;
+  transition: top 0.3s ease;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(212, 210, 209, 0.6);
+  z-index: 1050;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+#mainNavbar.fixed-top {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0;
+  right: 0;
+  z-index: 1070 !important;
+  box-shadow: 0 2px 8px rgba(181, 179, 178, 0.6);
+}
+#mainNavbar.fixed-top + main,
+#mainNavbar.fixed-top + * {
+  padding-top: 56px; /* navbar height */
+}
+
+/* Navbar brand left */
+#mainNavbar .navbar-brand {
+  margin-right: auto;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #f54a00;
+}
+/* Navbar menu right */
+#mainNavbarContent {
+  justify-content: flex-end !important;
+  display: flex;
+  width: 100%;
+}
+/* Navbar links */
+.nav-link {
+  color: #000 !important;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding-left: 25px !important;
+  padding-right: 0px !important;
+}
+.navbar-dark .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='black' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+.navbar-toggler{
+  padding-right: 0px !important;
+}
+/* Dropdown menu all devices */
+.navbar-nav .dropdown-menu {
+  background-color: white !important;  /* সাদা ব্যাকগ্রাউন্ড */
+  border: 1px solid rgba(0,0,0,0.15);
+  color: black;
+  margin-top: 0;
+}
+
+/* Dropdown item */
+.navbar-nav .dropdown-menu .dropdown-item {
+  color: black !important;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dropdown item hover */
+.navbar-nav .dropdown-menu .dropdown-item:hover,
+.navbar-nav .dropdown-menu .dropdown-item:focus {
+  background-color: #f54a00 !important; /* প্রাইমারি রং */
+  color: white !important;
+  cursor: pointer;
+}
+
+/* Bootstrap Collapse fix for mobile menu */
+@media (max-width: 991px) {
+  #mainNavbarContent {
+    display: none;  /* ডিফল্ট লুকানো */
+  }
+  #mainNavbarContent.show {
+    display: block; /* টগল করলে দেখাবে */
+  }
+
+  /* Dropdown menu inside collapse - মোবাইলে স্ক্রল */
+  .navbar-nav .dropdown-menu {
+    max-height: 300px; /* দরকার মত বাড়াও বা কমাও */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling ios এ */
+  }
+
+  /* ফোন নম্বর দেখানোর জন্য */
+  #topbar .d-lg-block {
+    display: none !important; /* মোবাইলে ফোন নম্বর লুকানো */
+  }
+}
+
+
+
+
+/* === Products Card Styles === */
+
+.card {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+.products-card{
+    justify-content: center !important;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgb(0 0 0 / 0.25);
+}
+
+.card-img-top {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    object-fit: cover;
+    height: 180px;
+    width: 100%;
+}
+
+.card-body {
+    padding: 15px 20px 0px;
+}
+
+.card-title {
+    font-weight: normal;
+    font-size: .9rem;
+    margin-bottom: 0px;
+    color: #212529;
+}
+.stoke-sold {
+    font-size: .78rem;
+    color:#f54a00e3;
+    font-weight: 600;
+}
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.card-info div {
+    font-weight: 500;
+}
+
+.card-footer {
+    background-color: #f1f3f5;
+    border-top: none;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 600;
+    text-align: center;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f54a00;
+  margin-bottom: 0.5rem;
+}
+
+.order-btn {
+  background-color: #f54a00;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.order-btn:hover {
+  background-color: #ff6900;
+  color: #fff;
+}
+.pagination .page-item.active .page-link {
+    background-color: #f54a00 !important;
+    border-color: #f54a00 !important;
+    color: white !important;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #ff6900 !important;
+    border-color: #ff6900 !important;
+    color: white !important;
+}
+
+/* === Responsive tweaks === */
+@media (max-width: 991px) {
+  .col-md-3 {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+  }
+}
+@media (max-width: 768px) {
+  .col-md-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+@media (max-width: 576px) {
+    .col-md-3 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+    .card-img-top {
+        height: 280px;
+    }
+    .card-title {
+        font-size: 1rem;
+        min-height: auto;
+    }
+    .card-info {
+        font-size: 0.85rem;
+    }
+    .card-footer {
+        font-size: 0.8rem;
+    }
+}
+
+
+/* === Category Card Styles === */
+/* Home Category design */
+.container.mb-5 {
+  padding-bottom: 30px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Important: parent row position relative and overflow visible */
+.row.justify-content-center {
+  position: relative;
+  overflow: visible;
+}
+
+.row.justify-content-center > div {
+  background: #fff;
+  border-radius: 0;
+  border: 1px solid #f0f0f0;
+  padding: 0;
+  margin: 0;
+  width: 130px;
+  height: 160px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: box-shadow 0.10s ease;
+  overflow: visible;
+}
+
+.row.justify-content-center > div:hover {
+  box-shadow:
+    0 8px 15px rgba(0, 0, 0, 0.3),    
+    5px 0 8px rgba(0, 0, 0, 0.06),  
+    -5px 0 8px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+.row.justify-content-center a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #222;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  user-select: none;
+  height: 140px;
+  justify-content: center;
+  width: 100%;
+}
+
+.category-name {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 5px;
+  min-height: 36px;
+  line-height: 1.08;
+  width: 100%;
+}
+
+.row.justify-content-center img {
+  width: 85%;
+  height: 85px;
+  margin-bottom: 0;
+  border-radius: 0; 
+  transition: border-color 0.25s ease;
+}
+
+.row.justify-content-center > div:hover img {
+  border-color: #a0c814;
+}
+/* === End of Category Card Styles === */
+
+
+/* === Footer Styles === */
+.site-footer {
+  background-color: #222;
+  color: #ddd;
+  padding: 40px 0 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+}
+
+.site-footer a {
+  color: #ddd;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.site-footer a:hover {
+  color: #f54a00;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  gap: 20px; /* Optional: gap between columns */
+}
+
+.footer-about,
+.footer-contact,
+.footer-quick-links,
+.footer-social {
+  flex: 1 1 22%;  /* roughly 4 equal columns with some gap */
+  min-width: 220px; /* minimum width for responsiveness */
+  box-sizing: border-box;
+  text-align: center; /* center content in each section */
+}
+
+
+.footer-about h4,
+.footer-contact h4,
+.footer-quick-links h4,
+.footer-social h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #f54a00;
+}
+
+/* Quick Links list style */
+.footer-quick-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-quick-links ul li {
+  margin-bottom: 8px;
+}
+
+.footer-quick-links ul li a {
+  color: #ccc;
+  font-weight: 500;
+}
+
+.footer-quick-links ul li a:hover {
+  color: #f54a00;
+}
+
+.footer-about p,
+.footer-contact p {
+  line-height: 1.6;
+  color: #ccc;
+}
+
+.social-icons a {
+  font-size: 20px;
+  margin-right: 15px;
+  display: inline-block;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #444;
+  padding-top: 15px;
+  color: #777;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+  }
+  .footer-about,
+  .footer-contact,
+  .footer-quick-links,
+  .footer-social {
+    flex: 1 1 100%;
+    margin-bottom: 20px;
+  }
+}
+
+/* === End of Footer Styles === */
+
+
+/* Animated break with flower petals */ 
+.animated-break {
+  position: relative;
+  height: 5px;
+  width: 100px;
+  margin: 8px auto 40px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#a0c814,#ff7a18,#f54a00, #a0c814);
+  background-size: 200% 100%;
+  animation: slide-bg 3s linear infinite;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+
+.animated-break::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+}
+
+.animated-break .flower {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+}
+
+.animated-break .flower span {
+  position: absolute;
+  width: 4px;
+  height: 6px;
+  border-radius: 50%;
+  transform-origin: bottom center;
+  animation: petalColor 3s linear infinite;
+}
+
+.animated-break .flower span:nth-child(1)  { transform: rotate(0deg) translateY(-8px);   animation-delay: 0s; }
+.animated-break .flower span:nth-child(2)  { transform: rotate(36deg) translateY(-8px);  animation-delay: 0.3s; }
+.animated-break .flower span:nth-child(3)  { transform: rotate(72deg) translateY(-8px);  animation-delay: 0.6s; }
+.animated-break .flower span:nth-child(4)  { transform: rotate(108deg) translateY(-8px); animation-delay: 0.9s; }
+.animated-break .flower span:nth-child(5)  { transform: rotate(144deg) translateY(-8px); animation-delay: 1.2s; }
+.animated-break .flower span:nth-child(6)  { transform: rotate(180deg) translateY(-8px); animation-delay: 1.5s; }
+.animated-break .flower span:nth-child(7)  { transform: rotate(216deg) translateY(-8px); animation-delay: 1.8s; }
+.animated-break .flower span:nth-child(8)  { transform: rotate(252deg) translateY(-8px); animation-delay: 2.1s; }
+.animated-break .flower span:nth-child(9)  { transform: rotate(288deg) translateY(-8px); animation-delay: 2.4s; }
+.animated-break .flower span:nth-child(10) { transform: rotate(324deg) translateY(-8px); animation-delay: 2.7s; }
+
+.animated-break .flower::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 2px;
+  width: 7px;
+  height: 7px;
+  background: #f54a00;
+  border-radius: 50%;
+}
+
+/* রঙ পাল্টানোর অ্যানিমেশন */
+@keyframes petalColor {
+  0%   { background: #ff7a18; }
+  20%  { background: #f54a00; }
+  40%  { background: #a0c814; }
+  60%  { background: #00bcd4; }
+  80%  { background: #9c27b0; }
+  100% { background: #ff7a18; }
+}
+
+@keyframes slide-bg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@media (max-width: 576px){
+  .animated-break{ width: 90px; }
+}
+
+/* === End of Animated break with flower petals === */

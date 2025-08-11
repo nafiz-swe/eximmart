@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Vehicle Accessories - Eximmart{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 text-center">Vehicle Accessories</h2>
+<div class="animated-break">
+  <div class="flower">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+<div class="row products-card px-0 my-3 py-3">
+    {% for product in products %}
+  <div class="col-md-3 col-sm-6 mb-4">
+    <div class="card h-100">
+      <img src="{{ url_for('static', filename=product.product_image1) }}" class="card-img-top" alt="{{ product.product_name }}" />
+      <div class="card-body text-center">
+        <div class="product-price mb-2">${{ '%.2f'|format(product.price) }}</div>
+        <h5 class="card-title">{{ product.product_name }}</h5>
+        <div class="d-flex justify-content-between stoke-sold mt-2 mb-3">
+          <div>Sold: {{ product.sold }}</div>
+          <div>Stock: {{ product.stock }}</div>
+        </div>
+        <button class="btn order-btn w-100">View Details</button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if page == 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('products_vehicle_accessories', page=page-1) }}">Previous</a>
+    </li>
+
+    {% for p in range(1, total_pages + 1) %}
+    <li class="page-item {% if p == page %}active{% endif %}">
+      <a class="page-link" href="{{ url_for('products_vehicle_accessories', page=p) }}">{{ p }}</a>
+    </li>
+    {% endfor %}
+
+    <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('products_vehicle_accessories', page=page+1) }}">Next</a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

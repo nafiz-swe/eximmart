@@ -1,0 +1,168 @@
+<!-- Topbar -->
+<nav id="topbar" class="navbar navbar-expand-lg fixed-top" style="background-color:#f54a00; z-index:1040;">
+  <div class="container d-flex flex-wrap align-items-center justify-content-between">
+
+    <!-- Left: Search form -->
+    <form class="d-flex align-items-center" role="search" style="min-width:280px;">
+      <input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search" name="q" style="max-width:200px;">
+      <label for="imgUpload" class="btn btn-outline-light mb-0 me-2" style="cursor:pointer;">
+        <i class="bi bi-upload"></i> Upload Image
+      </label>
+      <input type="file" id="imgUpload" name="image" accept="image/*" style="display:none;">
+      <button class="btn btn-outline-light" type="submit">Search</button>
+    </form>
+
+    <!-- Right side group: Cart + Language + Social -->
+    <div class="d-flex align-items-center" style="gap:1rem;">
+      <!-- Cart -->
+      <div id="topbar-cart" class="d-flex align-items-center text-white" style="font-weight:600; font-size:1.1rem; user-select:none; cursor:pointer;">
+        <i class="bi bi-cart-fill" style="font-size:1.4rem;"></i> 
+        <span id="cart-count" style="margin-left:0.3rem;">0</span>
+      </div>
+
+      <!-- Language selector -->
+      <select class="form-select form-select-sm" aria-label="Language select" style="width: 25px; background: #fff; color: #000; border: none; text-align: center; padding: 0 !important; font-size: .75rem; margin-left:.25rem; margin-right:-5px;">
+        <option value="en" selected>EN</option>
+        <option value="de">DE</option>
+        <option value="pt-BR">BR</option>   <!-- Portuguese (Brazil) -->
+        <option value="fr">FR</option>
+        <option value="id">ID</option>   <!-- Indonesian -->
+        <option value="bn">বাং</option>
+        <option value="hi">हिं</option>
+        <option value="ja">日本</option>
+        <option value="zh">中</option>   <!-- Chinese -->
+        <option value="ur">ارد</option>
+        <option value="ar">عرب</option>
+      </select>
+
+      <!-- Social media icons -->
+      <div class="d-flex align-items-center" style="gap: 0.5rem;">
+        <a href="https://youtube.com" target="_blank" class="text-white" aria-label="Youtube">
+          <i class="bi bi-youtube fs-5"></i>
+        </a>
+        <a href="https://facebook.com" target="_blank" class="text-white" aria-label="Facebook">
+          <i class="bi bi-facebook fs-5"></i>
+        </a>
+        <a href="https://whatsapp.com" target="_blank" class="text-white" aria-label="Whatsapp">
+          <i class="bi bi-whatsapp fs-5"></i>
+        </a>
+        <a href="https://instagram.com" target="_blank" class="text-white" aria-label="Instagram">
+          <i class="bi bi-instagram fs-5"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Main Navbar -->
+<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark fixed-top" style="z-index:1030;">
+  <div class="container">
+    <a class="navbar-brand" href="/">Eximmart</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbarContent"
+      aria-controls="mainNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbarContent">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/products" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Products
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="/products/gadgets">Electronics Gadgets</a></li>
+            <li><a class="dropdown-item" href="/products/mobile-phones">Mobile Phones</a></li>
+            <li><a class="dropdown-item" href="/products/computers-laptops">Computers & Laptops</a></li>
+            <li><a class="dropdown-item" href="/products/toys-kids">Toys & Kids</a></li>
+            <li><a class="dropdown-item" href="/products/fashion-wear">Fashion & Wear</a></li>
+            <li><a class="dropdown-item" href="/products/beauty-cosmetics">Beauty & Cosmetics</a></li>
+            <li><a class="dropdown-item" href="/products/home-decor">Home Decor</a></li>
+            <li><a class="dropdown-item" href="/products/plastics-homeware">Plastics & Homeware</a></li>
+            <li><a class="dropdown-item" href="/products/kitchen-appliances">Kitchen Appliances</a></li>
+            <li><a class="dropdown-item" href="/products/lighting">Lighting</a></li>
+            <li><a class="dropdown-item" href="/products/vehicle-accessories">Vehicle Accessories</a></li>
+            <li><a class="dropdown-item" href="/products/fitness-sports">Fitness & Sports</a></li>
+            <li><a class="dropdown-item" href="/products/health-care">Health & Care</a></li>
+            <li><a class="dropdown-item" href="/products/office-school">Office & School</a></li>
+            <li><a class="dropdown-item" href="/products/farming-tools">Farming Tools</a></li>
+            <li><a class="dropdown-item" href="/products/add_product">Add Product</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item"><a class="nav-link" href="/orders">Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="/user/profile">Profile</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about_us">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact_us">Contact Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const topbar = document.getElementById("topbar");
+  const mainNavbar = document.getElementById("mainNavbar");
+  const body = document.body;
+
+  // Scroll/resize function for navbar positions (আগের মতোই)
+  function adjustNavbarPosition() {
+    if (window.scrollY > 0) {
+      topbar.style.top = `-${topbar.offsetHeight}px`;
+      mainNavbar.classList.add("fixed-top");
+      mainNavbar.style.top = "0";
+      body.style.paddingTop = mainNavbar.offsetHeight + "px";
+    } else {
+      topbar.style.top = "0";
+      mainNavbar.classList.remove("fixed-top");
+      mainNavbar.style.top = topbar.offsetHeight + "px";
+      body.style.paddingTop = (topbar.offsetHeight + mainNavbar.offsetHeight) + "px";
+    }
+  }
+
+  adjustNavbarPosition();
+  window.addEventListener("scroll", adjustNavbarPosition);
+  window.addEventListener("resize", adjustNavbarPosition);
+
+  // Toggle button ৩ বার ক্লিক কাউন্টার
+  const toggler = mainNavbar.querySelector(".navbar-toggler");
+  const collapseMenu = document.getElementById("mainNavbarContent");
+
+  let clickCount = 0;
+  toggler.addEventListener("click", () => {
+    clickCount++;
+    if (window.innerWidth <= 991) {
+      if (clickCount === 3) {
+        // ৩ বার ক্লিক হলে close icon দেখাও
+        toggler.innerHTML = '<span class="bi bi-x-lg" style="font-size:1.5rem; color:black;"></span>';
+        // মেনু show করো
+        collapseMenu.classList.add("show");
+      } else if (clickCount > 3) {
+        // ৩ এর পর ক্লিক হলে toggle normal icon এ ফিরে আসবে আর মেনু hide করবে
+        toggler.innerHTML = '<span class="navbar-toggler-icon"></span>';
+        collapseMenu.classList.remove("show");
+        clickCount = 0; // রিসেট
+      }
+    } else {
+      // বড় স্ক্রিনে ক্লিক কাউন্টার রিসেট
+      clickCount = 0;
+      toggler.innerHTML = '<span class="navbar-toggler-icon"></span>';
+    }
+  });
+
+  // Close icon এ ক্লিক করলে মেনু hide করো
+  toggler.addEventListener("click", () => {
+    if (toggler.querySelector(".bi-x-lg")) {
+      // Close icon এ ক্লিক করলে মেনু hide & icon revert
+      collapseMenu.classList.remove("show");
+      toggler.innerHTML = '<span class="navbar-toggler-icon"></span>';
+      clickCount = 0;
+    }
+  });
+});
+</script>
+

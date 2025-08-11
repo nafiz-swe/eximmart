@@ -1,0 +1,71 @@
+﻿Flask
+mysql-connector-python
+
+
+# eximmart/
+# │
+# ├── app.py                   
+# ├── requirements.txt
+# ├── templates/
+# │   ├── admin/
+# │   │   └── dashboard.html
+# │   ├── user/
+# │   │   └── profile.html
+# │   ├── products/
+# │   │   └── list.html
+# │   └── orders/
+# │       └── order_list.html
+# ├── static/
+# │   ├── css/
+# │   ├── js/
+# │   └── images/
+# ├── admin/
+# │   └── admin.py
+# ├── user/
+# │   └── user.py
+# ├── configuration/
+# │   └── config.py
+# ├── products/
+# │   └── product.py
+# ├── orders/
+# │   └── order.py
+# ├── database/
+# │   └── db_connect.py
+# ├── utils/
+# │   └── helpers.py
+# ├── logs/
+# │   └── app.log
+# └── dashboard/
+#     ├── __init__.py
+#     └── dashboard.py
+
+
+
+
+# # ফোল্ডারগুলো তৈরি করো (যদি না থাকে)
+# mkdir templates, templates\admin, templates\user, templates\products, templates\orders, static, static\css, static\js, static\images, admin, user, configuration, products, orders, database, utils, logs, dashboard -Force
+
+# # ফাইলগুলো তৈরি করো (যদি আগে থেকে থাকে, তাহলে ওভাররাইট করবে)
+# "" | Out-File -Encoding utf8 templates\admin\dashboard.html -Force
+# "" | Out-File -Encoding utf8 templates\user\profile.html -Force
+# "" | Out-File -Encoding utf8 templates\products\list.html -Force
+# "" | Out-File -Encoding utf8 templates\orders\order_list.html -Force
+
+# "" | Out-File -Encoding utf8 admin\admin.py -Force
+# "" | Out-File -Encoding utf8 user\user.py -Force
+# "" | Out-File -Encoding utf8 configuration\config.py -Force
+# "" | Out-File -Encoding utf8 products\product.py -Force
+# "" | Out-File -Encoding utf8 orders\order.py -Force
+# "" | Out-File -Encoding utf8 database\db_connect.py -Force
+# "" | Out-File -Encoding utf8 utils\helpers.py -Force
+# "" | Out-File -Encoding utf8 logs\app.log -Force
+# "" | Out-File -Encoding utf8 dashboard\__init__.py -Force
+# "" | Out-File -Encoding utf8 dashboard\dashboard.py -Force
+# "" | Out-File -Encoding utf8 app.py -Force
+# "" | Out-File -Encoding utf8 requirements.txt -Force
+# "" | Out-File -Encoding utf8 templates\login.html -Force
+# "" | Out-File -Encoding utf8 templates\register.html -Force
+# "" | Out-File -Encoding utf8 templates\about_us.html -Force
+# "" | Out-File -Encoding utf8 templates\contact_us.html -Force
+# "" | Out-File -Encoding utf8 templates\privacy_policy.html -Force
+# "" | Out-File -Encoding utf8 templates\terms_and_conditions.html -Force

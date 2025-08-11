@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{{ product.product_name }} - Eximmart{% endblock %}
+
+{% block content %}
+<style>
+  .carousel-inner img {
+    height: 300px;            /* তোমার প্রয়োজন মতো উচ্চতা সেট করো */
+    width: 100%;
+    object-fit: contain;      /* aspect ratio ঠিক রেখে পুরো ছবি দেখাবে */
+    background-color: #f8f8f8; /* Optional: ছবির চারপাশে হালকা ব্যাকগ্রাউন্ড */
+  }
+  /* ভিডিওর জন্যও height fix করতে চাইলে */
+  .carousel-inner video {
+    height: 300px;
+    width: 100%;
+    object-fit: contain;
+    background-color: #000;
+  }
+</style>
+
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Image/Video Gallery -->
+        <div class="col-md-6">
+            <div id="mediaCarousel" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel-inner">
+    {% if product.product_image1 %}
+    <div class="carousel-item active">
+        <img src="{{ url_for('static', filename=product.product_image1) }}" class="d-block w-100">
+    </div>
+    {% endif %}
+    {% if product.product_image2 %}
+    <div class="carousel-item">
+        <img src="{{ url_for('static', filename=product.product_image2) }}" class="d-block w-100">
+    </div>
+    {% endif %}
+    {% if product.product_image3 %}
+    <div class="carousel-item">
+        <img src="{{ url_for('static', filename=product.product_image3) }}" class="d-block w-100">
+    </div>
+    {% endif %}
+    {% if product.product_video %}
+    <div class="carousel-item">
+        <video class="d-block w-100" controls>
+            <source src="{{ url_for('static', filename=product.product_video) }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    {% endif %}
+</div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#mediaCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#mediaCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <h2>{{ product.product_name }}</h2>
+            <p>{{ product.description }}</p>
+            <h4 class="text-success">${{ '%.2f'|format(product.price) }}</h4>
+            <p><strong>Sold:</strong> {{ product.sold }}</p>
+            <p><strong>Stock:</strong> {{ product.stock }}</p>
+
+            <!-- Quantity -->
+            <div class="input-group mb-3" style="width:150px;">
+                <button class="btn btn-outline-secondary" type="button" id="decrease">-</button>
+                <input type="number" id="quantity" class="form-control text-center" value="1" min="1">
+                <button class="btn btn-outline-secondary" type="button" id="increase">+</button>
+            </div>
+
+            <!-- Buttons -->
+            <button class="btn btn-primary me-2">Order Now</button>
+            <button class="btn btn-warning">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("decrease").addEventListener("click", function(){
+    let qty = document.getElementById("quantity");
+    if(qty.value > 1) qty.value--;
+});
+document.getElementById("increase").addEventListener("click", function(){
+    let qty = document.getElementById("quantity");
+    qty.value++;
+});
+</script>
+{% endblock %}
