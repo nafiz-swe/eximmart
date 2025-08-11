@@ -2,79 +2,6 @@
 {% block title %}{{ product.product_name }} - Eximmart{% endblock %}
 
 {% block content %}
-<style>
-/* === Main carousel styles === */
-.carousel-inner img, .carousel-inner video {
-  height: 300px;
-  width: 100%;
-  object-fit: contain;
-  background-color: #f8f8f8;
-  transition: transform 0.3s ease;
-  cursor: zoom-in;
-}
-.carousel-inner img:hover {
-  transform: scale(3.1);
-  cursor: zoom-out;
-}
-
-/* Hide default prev/next icons */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  display: none;
-}
-
-/* === Thumbnail carousel container === */
-#thumbCarousel {
-  margin-top: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.carousel{
-  border: 1px solid #000;
-}
-/* Thumbnail arrows */
-.thumb-arrow {
-  font-size: 1.5rem;
-  cursor: pointer;
-  user-select: none;
-  color: #333;
-  padding: 5px 10px;
-  border-radius: 4px;
-  background: #f0f0f0;
-  transition: background-color 0.3s;
-}
-.thumb-arrow:hover {
-  background: #ddd;
-}
-
-/* Thumbnails */
-.thumb-item {
-  width: 70px;
-  height: 50px;
-  overflow: hidden;
-  border: 2px solid #d1cbcb;
-  cursor: pointer;
-  background-color: #000; /* for videos */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.thumb-item img,
-.thumb-item video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none; /* disable video controls in thumbnail */
-}
-
-/* Highlight active thumbnail */
-.thumb-item.active {
-  border-color: #f54a00;
-}
-</style>
-
 <div class="container my-2">
   <div class="row">
     <!-- Image/Video Gallery -->
@@ -111,12 +38,11 @@
           </div>
           {% endif %}
         </div>
-
       </div>
 
       <!-- Thumbnail carousel -->
       <div id="thumbCarousel">
-        <span id="thumbPrev" class="thumb-arrow">&#10094;</span> <!-- left arrow -->
+        <span id="thumbPrev" class="thumb-arrow">&#10094;</span>
         
         {% if product.product_image1 %}
         <div class="thumb-item active" data-index="0">
@@ -141,7 +67,7 @@
         </div>
         {% endif %}
 
-        <span id="thumbNext" class="thumb-arrow">&#10095;</span> <!-- right arrow -->
+        <span id="thumbNext" class="thumb-arrow">&#10095;</span>
       </div>
     </div>
 
@@ -174,40 +100,51 @@
         <input type="text" class="form-control text-center" value="{{ product.stock }}" readonly />
       </div>
 
-      <!-- Quantity -->
-      <div class="input-group mb-3" style="width:225px;">
-        <span class="input-group-text">Quantity</span>
-        <button
-          class="btn btn-outline-secondary"
-          style="border-radius: 0.375rem 0 0 0.375rem;"
-          type="button"
-          id="decrease"
-        >
-          -
-        </button>
-        <input
-          type="text"
-          id="quantity"
-          class="form-control text-center"
-          value="1"
-          min="1"
-          data-stock="{{ product.stock or 0 }}"
-        />
-        <button class="btn btn-outline-secondary" type="button" id="increase">+</button>
-      </div>
-      <div
-        id="qtyErrorMsg"
-        style="color: red; font-size: 0.9rem; display: none; margin-top: -5px; margin-bottom: 5px"
-      ></div>
+<!-- Quantity and Add to Cart Form -->
+<form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post" style="margin-bottom: 0;">
+  <div class="input-group mb-3" style="width: 225px;">
+    <span class="input-group-text">Quantity</span>
+    <button
+      class="btn btn-outline-secondary"
+      style="border-radius: 0.375rem 0 0 0.375rem;"
+      type="button"
+      id="decrease"
+    >-</button>
+    <input
+      type="text"
+      id="quantity"
+      name="quantity"
+      class="form-control text-center"
+      value="1"
+      min="1"
+      max="{{ product.stock or 0 }}"
+      data-stock="{{ product.stock or 0 }}"
+      required
+    />
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      id="increase"
+    >+</button>
+  </div>
+  <div
+    id="qtyErrorMsg"
+    style="color: red; font-size: 0.9rem; display: none; margin-top: -5px; margin-bottom: 5px"
+  ></div>
 
-      <!-- Total Price -->
-      <div class="mb-3" id="totalPrice" data-price="{{ product.price | default(0) }}">
-        Total: ${{ '%.2f'|format(product.price or 0) }}
-      </div>
+  <!-- Total Price -->
+  <div class="mb-3" id="totalPrice" data-price="{{ product.price | default(0) }}">
+    Total: ${{ '%.2f'|format(product.price or 0) }}
+  </div>
 
-      <!-- Buttons -->
-      <button class="btn btn-primary me-2">Order Now</button>
-      <button class="btn btn-warning">Add to Cart</button>
+  <!-- Buttons wrapper: flex দিয়ে পাশাপাশি রাখা -->
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <button class="btn btn-primary me-2" type="button">Order Now</button>
+    <button type="submit" class="btn btn-warning">Add to Cart</button>
+  </div>
+</form>
+
+
     </div>
   </div>
 
@@ -228,6 +165,7 @@
     </div>
   </div>
 </div>
+
 
 <script>
 const totalPriceDiv = document.getElementById("totalPrice");
@@ -263,7 +201,7 @@ function updateTotalPrice() {
   totalPriceDiv.textContent = `Total Price: $${total}`;
 }
 
-// Decrease
+// Decrease quantity
 document.getElementById("decrease").addEventListener("click", function () {
   let qty = parseInt(quantityInput.value);
   if (qty > 1) {
@@ -272,7 +210,7 @@ document.getElementById("decrease").addEventListener("click", function () {
   }
 });
 
-// Increase
+// Increase quantity
 document.getElementById("increase").addEventListener("click", function () {
   let qty = parseInt(quantityInput.value);
   if (qty < stock) {
@@ -284,7 +222,7 @@ document.getElementById("increase").addEventListener("click", function () {
   }
 });
 
-// Direct input
+// Direct input validation
 quantityInput.addEventListener("input", function () {
   let qty = parseInt(quantityInput.value);
   if (isNaN(qty) || qty < 1) {
@@ -300,7 +238,7 @@ quantityInput.addEventListener("input", function () {
   updateTotalPrice();
 });
 
-// Initial update on page load
+// Initial price update on page load
 updateTotalPrice();
 
 // Zoom container JS
@@ -389,4 +327,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setActiveThumbnail(0);
 });
 </script>
+
 {% endblock %}

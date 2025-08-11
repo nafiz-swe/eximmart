@@ -4,6 +4,7 @@ from database.db_connect import get_connection
 from dashboard.dashboard import get_dashboard_stats
 from werkzeug.utils import secure_filename
 from flask import request 
+from flask import session
 
 app = Flask(__name__)
 app.secret_key = "f7a8d3e2c1b4f9a0d6e7c3b8a1f2e9d5"
@@ -102,6 +103,161 @@ def dashboard_page():
 @app.route('/user/profile')
 def user_profile():
     return render_template('user/profile.html')
+
+
+
+@app.route('/add_to_cart/<int:product_id>', methods=['GET', 'POST'])
+def add_to_cart(product_id):
+    if request.method == 'POST':
+        quantity = request.form.get('quantity', 1)
+        try:
+            quantity = int(quantity)
+            if quantity < 1:
+                quantity = 1
+        except:
+            quantity = 1
+    else:
+        quantity = 1
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM imported_products WHERE id = %s", (product_id,))
+    product = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not product:
+        return "Product পাওয়া যায়নি", 404
+
+    cart = session.get('cart', {})
+
+    pid = str(product_id)
+    if pid in cart:
+        cart[pid]['quantity'] += quantity
+    else:
+        cart[pid] = {
+            'product_name': product['product_name'],
+            'price': float(product['price']),
+            'quantity': quantity
+        }
+
+    session['cart'] = cart
+    return redirect(url_for('cart'))
+
+
+
+from flask import session, render_template, redirect, url_for, request, flash
+
+@app.route('/cart')
+def cart():
+    cart = session.get('cart', {})
+    cart_items = []
+    total_price = 0.0
+    total_quantity = 0
+    categories = set()
+
+    for pid, item in cart.items():
+        subtotal = item['price'] * item['quantity']
+        total_price += subtotal
+        total_quantity += item['quantity']
+        categories.add(item.get('category', 'Other'))
+        cart_items.append({
+            'product_id': pid,
+            'product_name': item['product_name'],
+            'price': item['price'],
+            'quantity': item['quantity'],
+            'subtotal': subtotal
+        })
+
+    total_categories = len(categories)
+
+    return render_template(
+        'cart.html',
+        cart_items=cart_items,
+        total_price=total_price,
+        total_quantity=total_quantity,
+        total_categories=total_categories
+    )
+
+
+
+@app.route('/order', methods=['GET', 'POST'])
+def order_page():
+    cart = session.get('cart', {})
+    if not cart:
+        flash("Your cart is empty! Please add products before placing an order.")
+        return redirect(url_for('cart'))
+
+    cart_items = []
+    total_price = 0.0
+    total_quantity = 0
+    product_names = set()
+
+    for pid, item in cart.items():
+        subtotal = item['price'] * item['quantity']
+        total_price += subtotal
+        total_quantity += item['quantity']
+        product_names.add(item['product_name'])  # count distinct product names
+        cart_items.append({
+            'product_id': pid,
+            'product_name': item['product_name'],
+            'price': item['price'],
+            'quantity': item['quantity'],
+            'subtotal': subtotal
+        })
+
+    total_categories = len(product_names)  # distinct product names count
+
+    if request.method == 'POST':
+        # Collect and process order form data here
+        full_name = request.form.get('fullName')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        id_proof_type = request.form.get('idProofType')
+
+        if id_proof_type == 'nid':
+            id_number = request.form.get('nidNumber')
+            id_file = request.files.get('nidFile')
+        elif id_proof_type == 'passport':
+            id_number = request.form.get('passportNumber')
+            id_file = request.files.get('passportFile')
+        else:
+            id_number = None
+            id_file = None
+
+        payment_method = request.form.get('paymentMethod')
+
+        # TODO: Add validation, save order, upload file...
+
+        session.pop('cart', None)  # clear cart on order placed
+        flash("Order placed successfully!")
+        return redirect(url_for('dashboard_page'))
+
+    return render_template(
+        'order.html',
+        cart_items=cart_items,
+        total_price=total_price,
+        total_quantity=total_quantity,
+        total_categories=total_categories
+    )
+
+
+
+@app.route('/place_order', methods=['POST'])
+def place_order():
+    full_name = request.form.get('fullName')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    address = request.form.get('address')
+    payment_method = request.form.get('paymentMethod')
+    # এখানে ডেটা ভ্যালিডেশন, অর্ডার ডাটাবেসে সেভ করার লজিক ইত্যাদি করবে
+    session.pop('cart', None)
+    flash("Order placed successfully!")
+    return redirect(url_for('dashboard_page'))
+
 
 @app.route('/products')
 def products_list():

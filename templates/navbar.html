@@ -15,10 +15,12 @@
     <!-- Right side group: Cart + Language + Social -->
     <div class="d-flex align-items-center" style="gap:1rem;">
       <!-- Cart -->
-      <div id="topbar-cart" class="d-flex align-items-center text-white" style="font-weight:600; font-size:1.1rem; user-select:none; cursor:pointer;">
+      <!-- Cart -->
+      <a href="/cart" id="topbar-cart" class="d-flex align-items-center text-white" style="font-weight:600; font-size:1.1rem; user-select:none; cursor:pointer; text-decoration:none;">
         <i class="bi bi-cart-fill" style="font-size:1.4rem;"></i> 
         <span id="cart-count" style="margin-left:0.3rem;">0</span>
-      </div>
+      </a>
+
 
       <!-- Language selector -->
       <select class="form-select form-select-sm" aria-label="Language select" style="width: 25px; background: #fff; color: #000; border: none; text-align: center; padding: 0 !important; font-size: .75rem; margin-left:.25rem; margin-right:-5px;">
@@ -164,5 +166,26 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+
+
+//CART START
+function getTotalCartQuantity(items) {
+  if (!items || items.length === 0) return 0;
+  return items.reduce((total, item) => total + (item.quantity || 0), 0);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cartCountSpan = document.getElementById("cart-count");
+
+  // উদাহরণ: localStorage থেকে cart ডেটা নেওয়া (তোমার ডেটা structure অনুযায়ী আপডেট করো)
+  const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+
+  const totalQuantity = getTotalCartQuantity(cartItems);
+
+  cartCountSpan.textContent = totalQuantity;
+});
+
 </script>
+
 

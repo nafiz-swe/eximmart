@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Order Form{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 600px;">
+  <h2 class="mb-4">Fill Out Your Order Form</h2>
+
+  <!-- Summary Section -->
+  <div class="border p-3 mb-4">
+    <h5>Order Summary</h5>
+<!-- ... your existing order.html code ... -->
+<table class="table table-sm mb-0">
+  <tbody>
+    <tr>
+      <th>Total Categories</th>
+      <td>{{ total_categories or 0 }}</td>
+    </tr>
+    <tr>
+      <th>Total Quantity</th>
+      <td>{{ total_quantity or 0 }}</td>
+    </tr>
+    <tr>
+      <th>Total Price</th>
+      <td>${{ "%.2f"|format(total_price or 0) }}</td>
+    </tr>
+  </tbody>
+</table>
+<!-- ... rest of the form ... -->
+
+  </div>
+
+  <form method="POST" action="{{ url_for('place_order') }}" enctype="multipart/form-data">
+
+    <div class="mb-3">
+      <label for="fullName" class="form-label">Full Name</label>
+      <input type="text" class="form-control" id="fullName" name="fullName" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email Address</label>
+      <input type="email" class="form-control" id="email" name="email" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Mobile Number</label>
+      <input type="tel" class="form-control" id="phone" name="phone" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Shipping Address</label>
+      <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+    </div>
+
+    <!-- Identity Proof Section -->
+    <div class="mb-3">
+      <label for="idProofType" class="form-label">Identity Proof Type</label>
+      <select class="form-select" id="idProofType" name="idProofType" required>
+        <option value="">-- Select --</option>
+        <option value="nid">NID</option>
+        <option value="passport">Passport</option>
+      </select>
+    </div>
+
+    <div class="mb-3" id="idNumberDiv" style="display:none;">
+      <label for="idNumber" class="form-label" id="idNumberLabel">ID Number</label>
+      <input type="text" class="form-control" id="idNumber" name="idNumber" />
+    </div>
+
+    <div class="mb-3" id="idFileDiv" style="display:none;">
+      <label for="idFile" class="form-label" id="idFileLabel">Upload Document Image</label>
+      <input type="file" class="form-control" id="idFile" name="idFile" accept="image/*" />
+    </div>
+
+    <div class="mb-3">
+      <label for="paymentMethod" class="form-label">Payment Method</label>
+      <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+        <option value="">-- Select --</option>
+        <option value="bkash">Bkash</option>
+        <option value="rocket">Rocket</option>
+        <option value="cash_on_delivery">Cash on Delivery</option>
+        <option value="card">Credit/Debit Card</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary me-2">Place Order</button>
+  </form>
+</div>
+
+<script>
+  const idProofType = document.getElementById('idProofType');
+  const idNumberDiv = document.getElementById('idNumberDiv');
+  const idFileDiv = document.getElementById('idFileDiv');
+  const idNumberLabel = document.getElementById('idNumberLabel');
+  const idFileLabel = document.getElementById('idFileLabel');
+  const idNumberInput = document.getElementById('idNumber');
+  const idFileInput = document.getElementById('idFile');
+
+  idProofType.addEventListener('change', function() {
+    if(this.value === 'nid') {
+      idNumberDiv.style.display = 'block';
+      idFileDiv.style.display = 'block';
+      idNumberLabel.textContent = 'NID Number';
+      idFileLabel.textContent = 'Upload NID Image';
+      idNumberInput.name = 'nidNumber';
+      idNumberInput.required = true;
+      idFileInput.name = 'nidFile';
+      idFileInput.required = true;
+    } else if(this.value === 'passport') {
+      idNumberDiv.style.display = 'block';
+      idFileDiv.style.display = 'block';
+      idNumberLabel.textContent = 'Passport Number';
+      idFileLabel.textContent = 'Upload Passport Image';
+      idNumberInput.name = 'passportNumber';
+      idNumberInput.required = true;
+      idFileInput.name = 'passportFile';
+      idFileInput.required = true;
+    } else {
+      idNumberDiv.style.display = 'none';
+      idFileDiv.style.display = 'none';
+      idNumberInput.required = false;
+      idFileInput.required = false;
+      idNumberInput.name = 'idNumber';
+      idFileInput.name = 'idFile';
+      idNumberInput.value = '';
+      idFileInput.value = '';
+    }
+  });
+</script>
+{% endblock %}

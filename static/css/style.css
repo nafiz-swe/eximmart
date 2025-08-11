@@ -664,27 +664,119 @@ h2 {
 
 /* === Products Detail Page Styles === */
 
-  .carousel-inner img {
-    height: 300px;
-    width: 100%;
-    object-fit: contain;
-    background-color: #f8f8f8;
-    transition: transform 0.3s ease;
-    cursor: zoom-in;
-  }
-  .carousel-inner img:hover {
-    transform: scale(2.2);
-    cursor: zoom-out;
-  }
-  .carousel-inner video {
-    height: 300px;
-    width: 100%;
-    object-fit: contain;
-    background-color: #000;
-  }
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    filter: invert(34%) sepia(93%) saturate(6310%) hue-rotate(6deg) brightness(99%) contrast(102%);
+.carousel-inner img,
+.carousel-inner video {
+  height: 300px;
+  width: 100%;
+  object-fit: contain;
+  background-color: #f8f8f8;
+  transition: transform 0.3s ease;
+  cursor: zoom-in;
+}
+.carousel-inner img:hover {
+  transform: scale(3.1);
+  cursor: zoom-out;
+}
+#thumbCarousel {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.carousel{
+  border: 1px solid #000;
+}
+.thumb-arrow {
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: #f0f0f0;
+  transition: background-color 0.3s;
+}
+.thumb-arrow:hover {
+  background: #ddd;
+}
+.thumb-item {
+  width: 70px;
+  height: 50px;
+  overflow: hidden;
+  border: 2px solid #d1cbcb;
+  cursor: pointer;
+  background-color: #000; /* for videos */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.thumb-item img,
+.thumb-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* disable video controls in thumbnail */
+}
+.thumb-item.active {
+  border-color: #f54a00;
+}
+/* === End of Products Detail Page Styles === */
+
+/* === Add Product Page Styles === */
+.product-form {
+  background: #ffffff;
+  border-radius: 12px; 
+  padding: 25px 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
 }
 
-/* === End of Products Detail Page Styles === */
+.product-form h2 {
+  font-weight: 600;
+  color: #f54a00;
+}
+.form-group{
+  margin-top: 20px;
+}
+.product-form label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+}
+.product-form input,
+.product-form select,
+.product-form textarea {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.product-form input:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+  border-color: #f54a00;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+.product-form button {
+    display: block;
+    width: 100%;
+    margin: 20px auto 0;
+    background: #f54a00;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.product-form button:hover {
+    background: #ff6900; /* hover এ গাঢ় শেড */
+}
+/* === End of Add Product Page Styles === */
