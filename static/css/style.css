@@ -298,14 +298,36 @@ h2 {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
 }
+.input-group-text {
+  font-weight: 600;
+  color: #000;
+}
+.product-info h3 {
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: #000;
+}
 .product-price {
   font-size: 1.5rem;
   font-weight: 700;
   color: #f54a00;
   margin-bottom: 0.5rem;
 }
-
-.order-btn {
+.btn-warning,
+.btn-primary {
+  width: 140px;
+  border: none;
+  border-radius: 0;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+.btn-warning{
+  background-color: #ffc107;
+  color: #000;
+}
+.order-btn,
+.btn-primary.me-2 {
   background-color: #f54a00;
   border: none;
   color: white;
@@ -313,10 +335,12 @@ h2 {
   transition: background-color 0.3s ease;
 }
 
-.order-btn:hover {
+.order-btn:hover,
+.btn-primary.me-2:hover{
   background-color: #ff6900;
   color: #fff;
 }
+
 .pagination .page-item.active .page-link {
     background-color: #f54a00 !important;
     border-color: #f54a00 !important;
@@ -539,6 +563,9 @@ h2 {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .product-info{
+    margin-top: 2rem;
+  }
   .footer-top {
     flex-direction: column;
   }
@@ -616,8 +643,6 @@ h2 {
   background: #f54a00;
   border-radius: 50%;
 }
-
-/* রঙ পাল্টানোর অ্যানিমেশন */
 @keyframes petalColor {
   0%   { background: #ff7a18; }
   20%  { background: #f54a00; }
@@ -635,5 +660,31 @@ h2 {
 @media (max-width: 576px){
   .animated-break{ width: 90px; }
 }
-
 /* === End of Animated break with flower petals === */
+
+/* === Products Detail Page Styles === */
+
+  .carousel-inner img {
+    height: 300px;
+    width: 100%;
+    object-fit: contain;
+    background-color: #f8f8f8;
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+  }
+  .carousel-inner img:hover {
+    transform: scale(2.2);
+    cursor: zoom-out;
+  }
+  .carousel-inner video {
+    height: 300px;
+    width: 100%;
+    object-fit: contain;
+    background-color: #000;
+  }
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    filter: invert(34%) sepia(93%) saturate(6310%) hue-rotate(6deg) brightness(99%) contrast(102%);
+}
+
+/* === End of Products Detail Page Styles === */

@@ -513,6 +513,8 @@ def add_product():
             return redirect(request.url)
 
         product_name = request.form.get('product_name')
+        brand_name = request.form.get('brand_name')
+        product_color = request.form.get('product_color')
         description = request.form.get('description')
         price = request.form.get('price')
         stored_in = request.form.get('stored_in')
@@ -569,12 +571,12 @@ def add_product():
 
         sql = """
         INSERT INTO imported_products 
-        (category, product_name, description, price, stored_in, stock, sold, factory_shop_address, contact_number, product_owner_name, 
+        (category, product_name, brand_name, product_color, description, price, stored_in, stock, sold, factory_shop_address, contact_number, product_owner_name, 
         product_image1, product_image2, product_image3, product_video, import_date)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURDATE())
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURDATE())
         """
         values = (
-            category, product_name, description, price, stored_in, stock, sold,
+            category, product_name, brand_name, product_color, description, price, stored_in, stock, sold,
             factory_shop_address, contact_number, product_owner_name,
             image1_db_path, image2_db_path, image3_db_path, video_db_path
         )

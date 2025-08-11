@@ -109,3 +109,6 @@ mkdir static\images\products\office-school
 mkdir static\images\products\vehicle-accessories
 mkdir static\images\products\fashion-wear
 mkdir static\images\products\beauty-cosmetics
+
+package install
+pip install Pillow
