@@ -362,12 +362,12 @@ def order_page():
                     INSERT INTO orders (
                         user_name, user_email, user_mobile, shipping_address,
                         id_proof_type, id_number, id_file_path, payment_method,
-                        total_categories, total_quantity, total_price
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        total_categories, total_quantity, total_price, order_status
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
                     full_name, email, phone, address,
                     id_proof_type, id_number, id_file_path, payment_method,
-                    total_categories, total_quantity, total_price
+                    total_categories, total_quantity, total_price, 'pending'  # নতুন কলাম এ 'pending' ডিফল্ট স্ট্যাটাস
                 ))
                 conn.commit()
 
@@ -765,8 +765,32 @@ def user_account():
     if 'user_id' not in session:
         flash("Please log in first.", "error")
         return redirect(url_for('login'))
-    return render_template('user/account.html', user_name=session.get('user_name'))
 
+    user_id = session['user_id']
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # ইউজারের পুরো তথ্য নিয়ে আসা
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+
+    # অর্ডার নিয়ে আসা, order_status স্ট্রিং হিসেবে আসবে
+    cursor.execute("""
+        SELECT * FROM orders WHERE user_email = %s ORDER BY order_date DESC
+        """, (user['users_email'],))
+    orders = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('user/account.html',
+                           user_name=user['users_name'],
+                           user_email=user['users_email'],
+                           user_mobile=user['users_mobile'],
+                           user_profession=user['users_profession'],
+                           user_created=user['users_create_account'].strftime('%Y-%m-%d'),
+                           orders=orders)
 
 
 
@@ -807,13 +831,19 @@ def login():
             flash("Incorrect password.", "error")
             return redirect(url_for('login'))
 
+        # সেশন-এ সব তথ্য রাখলাম
         session['user_id'] = user['id']
         session['user_name'] = user['users_name']
+        session['user_email'] = user['users_email']
+        session['user_mobile'] = user['users_mobile']
+        session['user_profession'] = user['users_profession']
+        # টাইমস্ট্যাম্প কে স্ট্রিং এ রূপান্তর
+        session['user_created'] = user['users_create_account'].strftime('%Y-%m-%d %H:%M:%S')
+
         flash("Logged in successfully!", "success")
         return redirect(url_for('user_account'))
 
     return render_template('user/login.html')
-
 
 
 
