@@ -1,0 +1,118 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 500px;">
+    <div class="card shadow-lg p-4 rounded-3">
+        <h2 class="text-center mb-4">Create an Account</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div>
+              {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}" onsubmit="return validatePassword()">
+            
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label for="users_name" class="form-label">Full Name</label>
+                <input type="text" id="users_name" name="users_name" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="users_email" class="form-label">Email</label>
+                <input type="email" id="users_email" name="users_email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <!-- Mobile Number -->
+            <div class="mb-3">
+                <label for="users_mobile" class="form-label">Mobile Number</label>
+                <input type="text" id="users_mobile" name="users_mobile" class="form-control" placeholder="Enter your mobile number" required>
+            </div>
+
+            <!-- Profession -->
+            <div class="mb-3">
+                <label for="users_profession" class="form-label">Profession</label>
+                <select id="users_profession" name="users_profession" class="form-select" required>
+                    <option value="">Select your profession</option>
+                    <option value="Student">Student</option>
+                    <option value="Full time business">Full time business</option>
+                    <option value="Part time business">Part time business</option>
+                    <option value="Private job">Private job</option>
+                    <option value="Government job">Government job</option>
+                    <option value="Overseas">Overseas</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3 position-relative">
+                <label for="users_password" class="form-label">Password</label>
+                <input type="password" id="users_password" name="users_password" class="form-control" placeholder="Create a password" required>
+                <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 bg-white" style="border: 1px solid #dee2e6;" onclick="togglePassword('users_password', this)" aria-label="Toggle Password Visibility">
+                    😑
+                </button>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3 position-relative">
+                <label for="confirm_password" class="form-label">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
+                <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 bg-white"  style="border: 1px solid #dee2e6;" onclick="togglePassword('confirm_password', this)" aria-label="Toggle Password Visibility">
+                    😑
+                </button>
+            </div>
+
+            <!-- Error Message -->
+            <div class="text-danger small mb-3" id="passwordError"></div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary me-2 w-100">Register</button>
+
+        </form>
+    </div>
+</div>
+
+<script>
+function validatePassword() {
+    const password = document.getElementById("users_password").value;
+    const confirm_password = document.getElementById("confirm_password").value;
+    const error = document.getElementById("passwordError");
+
+    if (password !== confirm_password) {
+        error.textContent = "Passwords do not match!";
+        return false;
+    }
+
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!regex.test(password)) {
+        error.textContent = "Password must be at least 6 characters and include uppercase(A-Z), lowercase(a-z), number(0-9), and any special character(@$!%*?&).";
+        return false;
+    }
+
+    error.textContent = "";
+    return true;
+}
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "😃"; // change icon or emoji for hide
+    } else {
+        input.type = "password";
+        btn.textContent = "😑"; // show icon
+    }
+}
+</script>
+{% endblock %}

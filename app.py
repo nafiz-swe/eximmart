@@ -5,6 +5,9 @@ from dashboard.dashboard import get_dashboard_stats
 from werkzeug.utils import secure_filename
 from flask import request 
 from flask import session
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 app = Flask(__name__)
 app.secret_key = "f7a8d3e2c1b4f9a0d6e7c3b8a1f2e9d5"
@@ -14,7 +17,7 @@ BASE_IMAGE_UPLOAD_FOLDER = 'static/images/products'
 CATEGORY_FOLDERS = {
     "Electronics Gadgets": "electronics-gadgets",
     "Mobile Phones": "mobile-phones",
-    "Computers & Laptops": "computers-laptops",
+    "Computer & Laptop": "computers-laptops",
     "Toys & Kids": "toys-kids",
     "Fashion & Wear": "fashion-wear",
     "Beauty & Cosmetics": "beauty-cosmetics",
@@ -41,7 +44,7 @@ def dashboard_page():
     categories = [
         {"name": "Electronics Gadgets", "folder": "electronics-gadgets"},
         {"name": "Mobile Phones", "folder": "mobile-phones"},
-        {"name": "Computers & Laptops", "folder": "computers-laptops"},
+        {"name": "Computer & Laptop", "folder": "computers-laptops"},
         {"name": "Toys & Kids", "folder": "toys-kids"},
         {"name": "Fashion & Wear", "folder": "fashion-wear"},
         {"name": "Beauty & Cosmetics", "folder": "beauty-cosmetics"},
@@ -59,7 +62,7 @@ def dashboard_page():
     CATEGORY_ROUTE_NAMES = {
         "Electronics Gadgets": "products_gadgets",
         "Mobile Phones": "products_mobile_phones",
-        "Computers & Laptops": "products_computers_laptops",
+        "Computer & Laptop": "products_computers_laptops",
         "Toys & Kids": "products_toys_kids",
         "Fashion & Wear": "products_fashion_wear",
         "Beauty & Cosmetics": "products_beauty_cosmetics",
@@ -100,81 +103,113 @@ def dashboard_page():
                            page=page, total_pages=total_pages)
 
 
-@app.route('/user/profile')
-def user_profile():
-    return render_template('user/profile.html')
+
+# Allowed file extensions for upload
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-
-@app.route('/add_to_cart/<int:product_id>', methods=['GET', 'POST'])
+@app.route('/add_to_cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
-    if request.method == 'POST':
-        quantity = request.form.get('quantity', 1)
-        try:
-            quantity = int(quantity)
-            if quantity < 1:
-                quantity = 1
-        except:
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please login first!")
+        return redirect(url_for('login_page'))
+
+    quantity = request.form.get('quantity', 1)
+    try:
+        quantity = int(quantity)
+        if quantity < 1:
             quantity = 1
-    else:
+    except:
         quantity = 1
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # Get product info
     cursor.execute("SELECT * FROM imported_products WHERE id = %s", (product_id,))
     product = cursor.fetchone()
 
+    if not product:
+        cursor.close()
+        conn.close()
+        flash("Product not found!")
+        return redirect(url_for('dashboard_page'))
+
+    # ✅ Stock check
+    if quantity > product['stock']:
+        flash(f"Only {product['stock']} items available in stock.")
+        cursor.close()
+        conn.close()
+        return redirect(url_for('dashboard_page'))
+
+    product_name = product['product_name']
+    unit_price = float(product['price'])
+
+    cursor.execute("SELECT users_mobile FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    users_mobile = user['users_mobile'] if user else ""
+
+    cursor.execute("""
+        SELECT cart_id, quantity FROM cart
+        WHERE users_id = %s AND product_id = %s
+    """, (user_id, product_id))
+    existing = cursor.fetchone()
+
+    if existing:
+        new_quantity = existing['quantity'] + quantity
+
+        # ✅ Stock check for updated quantity
+        if new_quantity > product['stock']:
+            flash(f"Cannot add more than {product['stock']} items to cart.")
+            cursor.close()
+            conn.close()
+            return redirect(url_for('cart_page'))
+
+        new_total = unit_price * new_quantity
+        cursor.execute("""
+            UPDATE cart SET quantity = %s, total_price = %s, added_at = NOW()
+            WHERE cart_id = %s
+        """, (new_quantity, new_total, existing['cart_id']))
+    else:
+        total_price = unit_price * quantity
+        cursor.execute("""
+            INSERT INTO cart
+            (users_id, users_mobile, product_id, product_name, unit_price, quantity, total_price, added_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
+        """, (user_id, users_mobile, product_id, product_name, unit_price, quantity, total_price))
+
+    conn.commit()
     cursor.close()
     conn.close()
 
-    if not product:
-        return "Product পাওয়া যায়নি", 404
-
-    cart = session.get('cart', {})
-
-    pid = str(product_id)
-    if pid in cart:
-        cart[pid]['quantity'] += quantity
-    else:
-        cart[pid] = {
-            'product_name': product['product_name'],
-            'price': float(product['price']),
-            'quantity': quantity
-        }
-
-    session['cart'] = cart
-    return redirect(url_for('cart'))
+    flash(f"Added {quantity} x {product_name} to your cart.")
+    return redirect(url_for('cart_page'))
 
 
-
-from flask import session, render_template, redirect, url_for, request, flash
 
 @app.route('/cart')
-def cart():
-    cart = session.get('cart', {})
-    cart_items = []
-    total_price = 0.0
-    total_quantity = 0
-    categories = set()
+def cart_page():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please login first!")
+        return redirect(url_for('login_page'))
 
-    for pid, item in cart.items():
-        subtotal = item['price'] * item['quantity']
-        total_price += subtotal
-        total_quantity += item['quantity']
-        categories.add(item.get('category', 'Other'))
-        cart_items.append({
-            'product_id': pid,
-            'product_name': item['product_name'],
-            'price': item['price'],
-            'quantity': item['quantity'],
-            'subtotal': subtotal
-        })
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM cart WHERE users_id = %s", (user_id,))
+    cart_items = cursor.fetchall()
+    cursor.close()
+    conn.close()
 
-    total_categories = len(categories)
+    total_price = sum(item['total_price'] for item in cart_items)
+    total_quantity = sum(item['quantity'] for item in cart_items)
+    total_categories = len(set(item['product_name'] for item in cart_items))
 
     return render_template(
-        'cart.html',
+        'orders/cart.html',
         cart_items=cart_items,
         total_price=total_price,
         total_quantity=total_quantity,
@@ -182,36 +217,117 @@ def cart():
     )
 
 
+@app.route('/update_cart_quantity', methods=['POST'])
+def update_cart_quantity():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Login required'}), 401
+
+    cart_id = request.form.get('cart_id')
+    quantity = request.form.get('quantity')
+    try:
+        quantity = int(quantity)
+        if quantity < 1:
+            return jsonify({'error': 'Quantity must be at least 1'}), 400
+    except:
+        return jsonify({'error': 'Invalid quantity'}), 400
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Get cart & product info
+    cursor.execute("""
+        SELECT c.unit_price, c.product_id, p.stock 
+        FROM cart c
+        JOIN imported_products p ON c.product_id = p.id
+        WHERE c.cart_id=%s AND c.users_id=%s
+    """, (cart_id, user_id))
+    res = cursor.fetchone()
+    if not res:
+        cursor.close()
+        conn.close()
+        return jsonify({'error': 'Cart item not found'}), 404
+
+    # ✅ Stock check
+    if quantity > res['stock']:
+        cursor.close()
+        conn.close()
+        return jsonify({'error': f"Only {res['stock']} items available in stock."}), 400
+
+    unit_price = res['unit_price']
+    total_price = unit_price * quantity
+
+    cursor.execute("""
+        UPDATE cart SET quantity=%s, total_price=%s, added_at=NOW()
+        WHERE cart_id=%s AND users_id=%s
+    """, (quantity, total_price, cart_id, user_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({'success': True, 'new_total': f"{total_price:.2f}"})
+
+
+
+@app.route('/remove_from_cart/<int:cart_id>', methods=['POST'])
+def remove_from_cart(cart_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please login first!")
+        return redirect(url_for('login_page'))
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM cart WHERE cart_id = %s AND users_id = %s", (cart_id, user_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    flash("Product removed from cart.")
+    return redirect(url_for('cart_page'))
+
+
+@app.context_processor
+def inject_cart_count():
+    user_id = session.get('user_id')
+    if not user_id:
+        return dict(cart_count=0)
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(DISTINCT product_id) FROM cart WHERE users_id = %s", (user_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+
+    return dict(cart_count=count)
+
+
 
 @app.route('/order', methods=['GET', 'POST'])
 def order_page():
-    cart = session.get('cart', {})
-    if not cart:
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please login first!")
+        return redirect(url_for('login_page'))
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM cart WHERE users_id = %s", (user_id,))
+    cart_items = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    if not cart_items:
         flash("Your cart is empty! Please add products before placing an order.")
-        return redirect(url_for('cart'))
+        return redirect(url_for('cart_page'))
 
-    cart_items = []
-    total_price = 0.0
-    total_quantity = 0
-    product_names = set()
-
-    for pid, item in cart.items():
-        subtotal = item['price'] * item['quantity']
-        total_price += subtotal
-        total_quantity += item['quantity']
-        product_names.add(item['product_name'])  # count distinct product names
-        cart_items.append({
-            'product_id': pid,
-            'product_name': item['product_name'],
-            'price': item['price'],
-            'quantity': item['quantity'],
-            'subtotal': subtotal
-        })
-
-    total_categories = len(product_names)  # distinct product names count
+    total_price = sum(item['total_price'] for item in cart_items)
+    total_quantity = sum(item['quantity'] for item in cart_items)
+    total_categories = len(set(item['product_name'] for item in cart_items))
 
     if request.method == 'POST':
-        # Collect and process order form data here
         full_name = request.form.get('fullName')
         email = request.form.get('email')
         phone = request.form.get('phone')
@@ -220,24 +336,56 @@ def order_page():
 
         if id_proof_type == 'nid':
             id_number = request.form.get('nidNumber')
-            id_file = request.files.get('nidFile')
+            id_file_upload = request.files.get('nidFile')
         elif id_proof_type == 'passport':
             id_number = request.form.get('passportNumber')
-            id_file = request.files.get('passportFile')
+            id_file_upload = request.files.get('passportFile')
         else:
             id_number = None
-            id_file = None
+            id_file_upload = None
 
         payment_method = request.form.get('paymentMethod')
 
-        # TODO: Add validation, save order, upload file...
+        id_file_path = None
+        if id_file_upload and allowed_file(id_file_upload.filename):
+            filename = secure_filename(f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{id_file_upload.filename}")
+            upload_folder = os.path.join(app.root_path, 'static', 'images', 'orders')
+            os.makedirs(upload_folder, exist_ok=True)
+            file_path = os.path.join(upload_folder, filename)
+            id_file_upload.save(file_path)
+            id_file_path = f'images/orders/{filename}'
 
-        session.pop('cart', None)  # clear cart on order placed
-        flash("Order placed successfully!")
+        try:
+            conn = get_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO orders (
+                        user_name, user_email, user_mobile, shipping_address,
+                        id_proof_type, id_number, id_file_path, payment_method,
+                        total_categories, total_quantity, total_price
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    full_name, email, phone, address,
+                    id_proof_type, id_number, id_file_path, payment_method,
+                    total_categories, total_quantity, total_price
+                ))
+                conn.commit()
+
+                # অর্ডার সফল হলে কার্ট খালি করে দাও
+                cursor.execute("DELETE FROM cart WHERE users_id = %s", (user_id,))
+                conn.commit()
+
+        except Exception as e:
+            flash(f"Error placing order: {e}", "danger")
+            return redirect(url_for('order_page'))
+        finally:
+            conn.close()
+
+        flash("Order placed successfully!", "success")
         return redirect(url_for('dashboard_page'))
 
     return render_template(
-        'order.html',
+        'orders/order.html',
         cart_items=cart_items,
         total_price=total_price,
         total_quantity=total_quantity,
@@ -245,38 +393,6 @@ def order_page():
     )
 
 
-
-@app.route('/place_order', methods=['POST'])
-def place_order():
-    full_name = request.form.get('fullName')
-    email = request.form.get('email')
-    phone = request.form.get('phone')
-    address = request.form.get('address')
-    payment_method = request.form.get('paymentMethod')
-    # এখানে ডেটা ভ্যালিডেশন, অর্ডার ডাটাবেসে সেভ করার লজিক ইত্যাদি করবে
-    session.pop('cart', None)
-    flash("Order placed successfully!")
-    return redirect(url_for('dashboard_page'))
-
-
-@app.route('/products')
-def products_list():
-    return render_template('products/list.html')
-
-@app.route("/product/<int:product_id>")
-def product_detail(product_id):
-    conn = get_connection()             # ডাটাবেস কানেকশন নাও
-    cursor = conn.cursor(dictionary=True)  # কার্সর তৈরি করো
-
-    cursor.execute("SELECT * FROM imported_products WHERE id = %s", (product_id,))
-    product = cursor.fetchone()
-
-    cursor.close()
-    conn.close()
-
-    if not product:
-        return "Product not found", 404
-    return render_template("product_detail.html", product=product)
 
 
 # Computer and Laptop Products (আগেই ছিল)
@@ -287,14 +403,14 @@ def products_computers_laptops():
     offset = (page - 1) * per_page
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT COUNT(*) as total FROM imported_products WHERE category = %s", ("Computers & Laptops",))
+    cursor.execute("SELECT COUNT(*) as total FROM imported_products WHERE category = %s", ("Computer & Laptop",))
     total_products = cursor.fetchone()['total']
     cursor.execute("""
         SELECT * FROM imported_products 
         WHERE category = %s 
         ORDER BY created_at DESC 
         LIMIT %s OFFSET %s
-    """, ("Computers & Laptops", per_page, offset))
+    """, ("Computer & Laptop", per_page, offset))
     products = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -625,12 +741,6 @@ def products_beauty_cosmetics():
     return render_template('products/beauty-cosmetics.html', products=products, page=page, total_pages=total_pages)
 
 
-
-
-@app.route('/orders')
-def orders_list():
-    return render_template('orders/order_list.html')
-
 @app.route('/about_us')
 def about_us():
     return render_template('about_us.html')
@@ -647,18 +757,155 @@ def privacy_policy():
 def terms_and_conditions():
     return render_template('terms_and_conditions.html')
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
 
-@app.route('/register')
+
+
+@app.route('/user/account')
+def user_account():
+    if 'user_id' not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for('login'))
+    return render_template('user/account.html', user_name=session.get('user_name'))
+
+
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # যদি ইউজার already logged in থাকে
+    if 'user_id' in session:
+        return redirect(url_for('user_account'))
+
+    if request.method == 'POST':
+        login_input = request.form.get('login_input', '').strip()
+        password = request.form.get('password', '').strip()
+
+        if not login_input or not password:
+            flash("Both email/phone and password are required.", "error")
+            return redirect(url_for('login'))
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        if '@' in login_input:
+            cursor.execute("SELECT * FROM users WHERE users_email = %s", (login_input,))
+            user_type = "email"
+        else:
+            cursor.execute("SELECT * FROM users WHERE users_mobile = %s", (login_input,))
+            user_type = "phone"
+
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not user:
+            flash(f"No user found with this {user_type}.", "error")
+            return redirect(url_for('login'))
+
+        if not check_password_hash(user['users_password'], password):
+            flash("Incorrect password.", "error")
+            return redirect(url_for('login'))
+
+        session['user_id'] = user['id']
+        session['user_name'] = user['users_name']
+        flash("Logged in successfully!", "success")
+        return redirect(url_for('user_account'))
+
+    return render_template('user/login.html')
+
+
+
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("Logged out successfully.", "success")
+    return redirect(url_for('login'))
+
+
+
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    # যদি ইউজার already logged in থাকে
+    if 'user_id' in session:
+        return redirect(url_for('user_account'))
+
+    if request.method == 'POST':
+        users_name = request.form.get('users_name').strip()
+        users_email = request.form.get('users_email').strip()
+        users_mobile = request.form.get('users_mobile').strip()
+        users_profession = request.form.get('users_profession').strip()
+        users_password = request.form.get('users_password')
+        confirm_password = request.form.get('confirm_password')
+
+        if users_password != confirm_password:
+            flash("Passwords do not match!", "error")
+            return redirect(url_for('register'))
+
+        import re
+        regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$')
+        if not regex.match(users_password):
+            flash("Password must be at least 6 characters and include uppercase, lowercase, number, and special character.", "error")
+            return redirect(url_for('register'))
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id FROM users WHERE users_email = %s OR users_mobile = %s", (users_email, users_mobile))
+        existing = cursor.fetchone()
+        if existing:
+            flash("User with this email or mobile number already exists.", "error")
+            cursor.close()
+            conn.close()
+            return redirect(url_for('register'))
+
+        # Hash the password before storing
+        hashed_password = generate_password_hash(users_password)
+
+        insert_sql = """
+            INSERT INTO users (users_name, users_email, users_mobile, users_profession, users_password) 
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_sql, (users_name, users_email, users_mobile, users_profession, hashed_password))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash("Registration successful! You can now login.", "success")
+        return redirect(url_for('login'))
+
+    return render_template('user/register.html')
+
+
 
 @app.route('/api/dashboard_stats')
 def dashboard_stats_api():
     stats = get_dashboard_stats()
     return jsonify(stats)
+
+
+
+@app.route('/product/<int:product_id>')
+def product_detail(product_id):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    sql = "SELECT * FROM imported_products WHERE id = %s"
+    cursor.execute(sql, (product_id,))
+    product = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not product:
+        flash("Product not found.", "error")
+        return redirect(url_for('dashboard_page'))  # অথবা তোমার হোম পেজ
+
+    return render_template('product_detail.html', product=product)
+
 
 @app.route('/products/add_product', methods=['GET', 'POST'])
 def add_product():
@@ -746,6 +993,65 @@ def add_product():
         return redirect(url_for('add_product'))
 
     return render_template('products/add_product.html')
+
+
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_products():
+    search_query = request.args.get('q', '').strip()
+    image_file = request.files.get('image')
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search_query:
+        words = search_query.split()
+
+        conditions = []
+        params = []
+        for word in words:
+            condition = """
+                (category REGEXP %s OR product_name REGEXP %s OR brand_name REGEXP %s)
+            """
+            conditions.append(condition)
+            regex_pattern = f'[[:<:]]{word}[[:>:]]'
+            params.extend([regex_pattern, regex_pattern, regex_pattern])
+
+        where_clause = " OR ".join(conditions)
+
+        sql = f"""
+            SELECT *,
+                (
+                    { " + ".join([f"(category REGEXP %s) + (product_name REGEXP %s) + (brand_name REGEXP %s)" for _ in words]) }
+                ) AS match_count
+            FROM imported_products
+            WHERE {where_clause}
+            ORDER BY match_count DESC, product_name ASC
+        """
+
+        match_params = []
+        for word in words:
+            regex_pattern = f'[[:<:]]{word}[[:>:]]'
+            match_params.extend([regex_pattern, regex_pattern, regex_pattern])
+
+        cursor.execute(sql, match_params + params)
+        products = cursor.fetchall()
+
+    elif image_file:
+        # ইমেজ সার্চ logic ekhane thakbe (optional)
+        cursor.execute("SELECT * FROM imported_products LIMIT 50")
+        products = cursor.fetchall()
+
+    else:
+        products = []
+
+    cursor.close()
+    conn.close()
+
+    return render_template('products/search.html', products=products, query=search_query)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

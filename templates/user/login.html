@@ -1,0 +1,54 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 500px;">
+  <div class="card shadow-lg p-4 rounded-3">
+    <h2 class="text-center mb-4">Login</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div>
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="mb-3">
+        <label for="login_input" class="form-label">Email or Number</label>
+        <input type="text" class="form-control" id="login_input" name="login_input" placeholder="Enter email or mobile number" required />
+      </div>
+
+      <div class="mb-3 position-relative">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required />
+        <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2 bg-white"  style="border: 1px solid #dee2e6;" onclick="togglePassword('password', this)" aria-label="Toggle Password Visibility">
+          😑
+        </button>
+      </div>
+
+      <button type="submit" class="btn btn-primary me-2 w-100">Login</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === "password") {
+    input.type = "text";
+    btn.textContent = "😃";  // password shown
+  } else {
+    input.type = "password";
+    btn.textContent = "😑";  // password hidden
+  }
+}
+</script>
+{% endblock %}

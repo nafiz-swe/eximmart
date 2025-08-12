@@ -1,0 +1,455 @@
+<!-- templates/orders/cart.html -->
+{% extends "base.html" %}
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<div class="container my-4 px-0">
+  <h2>Your Cart</h2>
+
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="alert alert-success">
+    {{ messages[0] }}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% if cart_items %}
+  <style>
+    .me-2 {
+      margin-right: 0 !important;
+    }
+    /* Place Order বাটন ডানদিকে স্থির করার জন্য */
+.place-order-container {
+  text-align: right;
+  margin-top: 20px; /* চাইলে একটু space দিতে পারো */
+}
+
+/* Basic table styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.table thead {
+  background-color: #f54a00;
+  color: #fff;
+}
+
+.table thead th {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 2px solid #ff6900;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.table tbody td {
+  padding: 12px 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid #eee;
+}
+
+/* Buttons styling */
+.table .btn-danger {
+  background-color: #f54a00;
+  border: none;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 0;
+}
+
+.table .btn-danger:hover {
+  background-color: #ff6900;
+}
+
+/* Quantity input */
+.quantity-input {
+  width: 80px;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  padding: 5px 8px;
+  font-size: 1rem;
+  text-align: center;
+  transition: border-color 0.3s ease;
+}
+.quantity-error-msg {
+  font-size: 0.85rem;
+  color: #dc3545; /* Bootstrap danger red */
+  margin-top: 4px;
+  display: none;
+}
+
+.quantity-input:focus {
+  border-color: #ff6900;
+  outline: none;
+  box-shadow: 0 0 6px rgba(255, 105, 0, 0.5);
+}
+
+/* Responsive styles for max-width 768px */
+@media (max-width: 768px) {
+  .container.my-4.px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .table-responsive-custom {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow-x: auto;
+  }
+
+  /* Hide thead */
+  .table thead {
+    display: none;
+  }
+
+  /* tbody rows as cards */
+  .table tbody tr {
+    display: block;
+    width: 100% !important;
+    margin: 0 0 1.5rem 0 !important;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+  }
+
+  .table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    flex-basis: 45%;
+    text-transform: uppercase;
+  }
+
+  /* tfoot row as flex container, items right aligned */
+tfoot tr {
+  display: flex !important;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 15px;
+  margin-top: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+tfoot th {
+  display: inline-block !important;
+  padding: 0 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+}
+
+tfoot th.text-end {
+  order: 1;
+}
+
+tfoot th:not(.text-end) {
+  order: 2;
+  margin-left: 8px;
+  margin-right: 0;
+}
+
+}
+
+/* Smaller devices: stack labels above values */
+@media (max-width: 480px) {
+  .table tbody td {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.9rem;
+  }
+
+  .table tbody td::before {
+    margin-bottom: 6px;
+  }
+
+  .quantity-input {
+    width: 100% !important;
+  }
+}
+
+/* Extra small devices: smaller buttons and inputs */
+@media (max-width: 350px) {
+  .btn-danger {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  .quantity-input {
+    font-size: 0.9rem;
+    padding: 6px 8px;
+  }
+}
+
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* Modal box */
+.modal-content {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 8px;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+/* Buttons container */
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Buttons */
+.modal-buttons .btn {
+  padding: 8px 20px;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.modal-buttons .btn-danger {
+  background-color: #f54a00;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.modal-buttons .btn-danger:hover {
+  background-color: #ff6900;
+}
+
+.modal-buttons .btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.modal-buttons .btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+    </style>
+
+    <!-- Custom confirmation modal -->
+<div id="confirmModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <p>Are you sure you want to remove this product?</p>
+    <div class="modal-buttons">
+      <button id="confirmYes" class="btn btn-danger">Yes</button>
+      <button id="confirmNo" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive-custom">
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart_items %}
+      <tr data-cart-id="{{ item.cart_id }}">
+        <td data-label="Product">{{ item.product_name }}</td>
+        <td data-label="Unit Price">${{ "%.2f"|format(item.unit_price) }}</td>
+        <!-- <td data-label="Quantity">
+          <input type="text" min="1" value="{{ item.quantity }}" class="form-control quantity-input" />
+        </td> -->
+
+        <td data-label="Quantity">
+          <input type="text" min="1" value="{{ item.quantity }}" class="form-control quantity-input" />
+          <p class="quantity-error-msg text-danger small mt-1" style="display:none;"></p>
+        </td>
+
+
+        <td data-label="Total Price" class="item-total-price">${{ "%.2f"|format(item.total_price) }}</td>
+        <td data-label="Actions">
+          <form action="{{ url_for('remove_from_cart', cart_id=item.cart_id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3" class="text-end">Total</th>
+        <th>${{ "%.2f"|format(total_price) }}</th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+  <div class="place-order-container">
+    <a href="{{ url_for('order_page') }}" class="btn btn-primary mr-0 me-2">Place Order</a>
+  </div>
+
+  {% else %}
+  <p>Your cart is empty. <a href="{{ url_for('dashboard_page') }}">Browse products</a></p>
+  {% endif %}
+</div>
+
+<script>
+// Quantity input change event: alert বাদ দিয়ে নিচে error message দেখাবে
+document.querySelectorAll('.quantity-input').forEach(input => {
+  input.addEventListener('change', function() {
+    const tr = this.closest('tr');
+    const cartId = tr.getAttribute('data-cart-id');
+    let newQty = this.value.trim();
+
+    const errorMsgElem = this.nextElementSibling; // নিচের <p> error message
+
+    // Clear আগের error message
+    if (errorMsgElem) {
+      errorMsgElem.style.display = 'none';
+      errorMsgElem.textContent = '';
+    }
+
+    if (!newQty || isNaN(newQty) || parseInt(newQty) < 1) {
+      if (errorMsgElem) {
+        errorMsgElem.textContent = 'Quantity must be at least 1';
+        errorMsgElem.style.display = 'block';
+      }
+      this.value = 1;
+      return;
+    }
+
+    fetch("{{ url_for('update_cart_quantity') }}", {
+      method: "POST",
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        cart_id: cartId,
+        quantity: newQty
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.success){
+        tr.querySelector('.item-total-price').textContent = "$" + data.new_total;
+        location.reload();  // দরকার হলে শুধু টোটাল আপডেট করো
+      } else {
+        if (errorMsgElem) {
+          errorMsgElem.textContent = data.error || "Error updating quantity";
+          errorMsgElem.style.display = 'block';
+        }
+      }
+    })
+    .catch(() => {
+      if (errorMsgElem) {
+        errorMsgElem.textContent = "Error updating quantity";
+        errorMsgElem.style.display = 'block';
+      }
+    });
+  });
+});
+
+
+// কাস্টম কনফার্মেশন মডাল (HTML+CSS আগে লাগবে, এটা শুধু JS লজিক)
+const confirmModal = document.getElementById('confirmModal');
+const confirmYes = document.getElementById('confirmYes');
+const confirmNo = document.getElementById('confirmNo');
+
+let formToSubmit = null;
+
+document.querySelectorAll('form[action*="remove_from_cart"]').forEach(form => {
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    formToSubmit = this;
+    if(confirmModal){
+      confirmModal.style.display = 'flex';
+    } else {
+      // যদি মডাল না থাকে তাহলে ব্রাউজারের confirm দিয়ে fallback
+      if(window.confirm('Are you sure you want to remove this product?')){
+        formToSubmit.submit();
+      }
+    }
+  });
+});
+
+if(confirmYes){
+  confirmYes.addEventListener('click', () => {
+    if(formToSubmit){
+      formToSubmit.submit();
+    }
+    if(confirmModal){
+      confirmModal.style.display = 'none';
+    }
+    formToSubmit = null;
+  });
+}
+
+if(confirmNo){
+  confirmNo.addEventListener('click', () => {
+    if(confirmModal){
+      confirmModal.style.display = 'none';
+    }
+    formToSubmit = null;
+  });
+}
+
+if(confirmModal){
+  confirmModal.addEventListener('click', (e) => {
+    if(e.target === confirmModal){
+      confirmModal.style.display = 'none';
+      formToSubmit = null;
+    }
+  });
+}
+
+</script>
+{% endblock %}

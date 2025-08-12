@@ -1,3 +1,4 @@
+<!-- templates/orders/order.html -->
 {% extends "base.html" %}
 {% block title %}Order Form{% endblock %}
 
@@ -8,28 +9,25 @@
   <!-- Summary Section -->
   <div class="border p-3 mb-4">
     <h5>Order Summary</h5>
-<!-- ... your existing order.html code ... -->
-<table class="table table-sm mb-0">
-  <tbody>
-    <tr>
-      <th>Total Categories</th>
-      <td>{{ total_categories or 0 }}</td>
-    </tr>
-    <tr>
-      <th>Total Quantity</th>
-      <td>{{ total_quantity or 0 }}</td>
-    </tr>
-    <tr>
-      <th>Total Price</th>
-      <td>${{ "%.2f"|format(total_price or 0) }}</td>
-    </tr>
-  </tbody>
-</table>
-<!-- ... rest of the form ... -->
-
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr>
+          <th>Total Categories</th>
+          <td>{{ total_categories or 0 }}</td>
+        </tr>
+        <tr>
+          <th>Total Quantity</th>
+          <td>{{ total_quantity or 0 }}</td>
+        </tr>
+        <tr>
+          <th>Total Price</th>
+          <td>${{ "%.2f"|format(total_price or 0) }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <form method="POST" action="{{ url_for('place_order') }}" enctype="multipart/form-data">
+  <form method="POST" action="{{ url_for('order_page') }}" enctype="multipart/form-data">
 
     <div class="mb-3">
       <label for="fullName" class="form-label">Full Name</label>
@@ -68,7 +66,7 @@
 
     <div class="mb-3" id="idFileDiv" style="display:none;">
       <label for="idFile" class="form-label" id="idFileLabel">Upload Document Image</label>
-      <input type="file" class="form-control" id="idFile" name="idFile" accept="image/*" />
+      <input type="file" class="form-control" id="idFile" name="idFile" accept="image/*,application/pdf" />
     </div>
 
     <div class="mb-3">
@@ -105,6 +103,7 @@
       idNumberInput.required = true;
       idFileInput.name = 'nidFile';
       idFileInput.required = true;
+      idFileInput.accept = "image/*,application/pdf";
     } else if(this.value === 'passport') {
       idNumberDiv.style.display = 'block';
       idFileDiv.style.display = 'block';
@@ -114,6 +113,7 @@
       idNumberInput.required = true;
       idFileInput.name = 'passportFile';
       idFileInput.required = true;
+      idFileInput.accept = "image/*,application/pdf";
     } else {
       idNumberDiv.style.display = 'none';
       idFileDiv.style.display = 'none';

@@ -139,10 +139,13 @@
 
   <!-- Buttons wrapper: flex দিয়ে পাশাপাশি রাখা -->
   <div style="display: flex; gap: 10px; align-items: center;">
-    <button class="btn btn-primary me-2" type="button">Order Now</button>
+    {% set order_url = url_for('order_page') %}
+    <button onclick="location.href='{{ order_url }}'" class="btn btn-primary me-2">Order Now</button>
     <button type="submit" class="btn btn-warning">Add to Cart</button>
   </div>
+
 </form>
+
 
 
     </div>
