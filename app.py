@@ -192,11 +192,13 @@ def add_to_cart(product_id):
 
 @app.route('/cart')
 def cart_page():
+    # ইউজার লগইন চেক
     user_id = session.get('user_id')
     if not user_id:
-        flash("Please login first!")
-        return redirect(url_for('login_page'))
+        flash("Please login first!", "warning")
+        return redirect(url_for('login'))
 
+    # ডাটাবেস কানেকশন
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM cart WHERE users_id = %s", (user_id,))
@@ -204,10 +206,12 @@ def cart_page():
     cursor.close()
     conn.close()
 
+    # হিসাব
     total_price = sum(item['total_price'] for item in cart_items)
     total_quantity = sum(item['quantity'] for item in cart_items)
     total_categories = len(set(item['product_name'] for item in cart_items))
 
+    # cart.html রেন্ডার
     return render_template(
         'orders/cart.html',
         cart_items=cart_items,
@@ -215,6 +219,8 @@ def cart_page():
         total_quantity=total_quantity,
         total_categories=total_categories
     )
+
+
 
 
 @app.route('/update_cart_quantity', methods=['POST'])
