@@ -36,25 +36,41 @@
     </div>
   </div>
 
-  <div class="row products-card">
-    {% for product in products %}
-      <div class="col-md-3 col-sm-6 mb-4">
-        <div class="card h-100">
-          <img src="{{ url_for('static', filename=product.product_image1) }}" class="card-img-top" alt="{{ product.product_name }}" />
-          <div class="card-body text-center">
-            <div class="product-price mb-2">${{ '%.2f'|format(product.price) }}</div>
-            <h5 class="card-title">{{ product.product_name }}</h5>
-            <div class="d-flex justify-content-between stoke-sold mt-2 mb-3">
-                <div>Sold: {{ product.sold }}</div>
-                <div>Stock: {{ product.stock }}</div>
-            </div>
-            {% set detail_url = url_for('product_detail', product_id=product.id) %}
-            <button onclick="window.location.href='{{ detail_url }}'" class="btn order-btn w-100">View Details</button>
+<div class="row products-card">
+  {% for product in products %}
+    <div class="product-col">
+      <div class="card h-100">
+        {% set detail_url = url_for('product_detail', product_id=product.id) %}
+
+        <!-- Image clickable -->
+        <a href="{{ detail_url }}" target="_blank">
+          <img src="{{ url_for('static', filename=product.product_image1) }}" 
+               class="card-img-top" alt="{{ product.product_name }}" />
+        </a>
+
+        <div class="card-body text-center">
+          <div class="product-price mb-2">
+            ${{ '%.2f'|format(product.price) }}
+          </div>
+
+          <!-- Title clickable -->
+          <h5 class="card-title">
+            <a href="{{ detail_url }}" target="_blank" 
+               style="text-decoration:none; color:inherit;">
+              {{ product.product_name }}
+            </a>
+          </h5>
+
+          <div class="d-flex justify-content-between stoke-sold mt-2">
+            <div>Sold: {{ product.sold }}</div>
+            <div>Stock: {{ product.stock }}</div>
           </div>
         </div>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
+</div>
+
 
   <!-- Pagination -->
   {% if total_pages > 1 %}
