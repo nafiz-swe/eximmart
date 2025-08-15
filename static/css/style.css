@@ -276,7 +276,7 @@ select:focus {
 
 .card {
     box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
-    border-radius: 8px;
+    border-radius: 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin-bottom: 20px;
     background-color: #fff;
@@ -287,10 +287,9 @@ select:focus {
 }
 
 .card-img-top {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-radius: 0;
     object-fit: cover;
-    height: 180px;
+    height: 160px;
     width: 100%;
 }
 
@@ -410,9 +409,10 @@ select:focus {
     .product-col {
         flex: 0 0 100%; /* 1 card */
         max-width: 100%;
+        padding: 8px;
     }
     .card-img-top {
-        height: 280px;
+        height: 333px;
     }
     .card-title {
         font-size: 1rem;

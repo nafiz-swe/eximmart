@@ -310,7 +310,7 @@ tfoot th:not(.text-end) {
       {% for item in cart_items %}
       <tr data-cart-id="{{ item.cart_id }}">
         <td data-label="Product">{{ item.product_name }}</td>
-        <td data-label="Unit Price">${{ "%.2f"|format(item.unit_price) }}</td>
+        <td data-label="Unit Price">BDT {{ item.unit_price }}৳</td>
         <!-- <td data-label="Quantity">
           <input type="text" min="1" value="{{ item.quantity }}" class="form-control quantity-input" />
         </td> -->
@@ -320,8 +320,7 @@ tfoot th:not(.text-end) {
           <p class="quantity-error-msg text-danger small mt-1" style="display:none;"></p>
         </td>
 
-
-        <td data-label="Total Price" class="item-total-price">${{ "%.2f"|format(item.total_price) }}</td>
+        <td data-label="Total Price" class="item-total-price">BDT {{ item.total_price }}৳</td>
         <td data-label="Actions">
           <form action="{{ url_for('remove_from_cart', cart_id=item.cart_id) }}" method="post" style="display:inline;">
             <button type="submit" class="btn btn-danger btn-sm">Remove</button>
@@ -333,7 +332,7 @@ tfoot th:not(.text-end) {
     <tfoot>
       <tr>
         <th colspan="3" class="text-end">Total</th>
-        <th>${{ "%.2f"|format(total_price) }}</th>
+        <th>BDT {{ total_price }}৳</th>
         <th></th>
       </tr>
     </tfoot>

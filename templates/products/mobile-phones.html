@@ -15,7 +15,7 @@
     <div class="card h-100">
       <img src="{{ url_for('static', filename=product.product_image1) }}" class="card-img-top" alt="{{ product.product_name }}" />
       <div class="card-body text-center">
-        <div class="product-price mb-2">${{ '%.2f'|format(product.price) }}</div>
+        <div class="product-price mb-2">BDT {{ product.price }}৳</div>
         <h5 class="card-title">{{ product.product_name }}</h5>
         <div class="d-flex justify-content-between stoke-sold mt-2 mb-3">
           <div>Sold: {{ product.sold }}</div>

@@ -114,8 +114,8 @@ def allowed_file(filename):
 def add_to_cart(product_id):
     user_id = session.get('user_id')
     if not user_id:
-        flash("Please login first!")
-        return redirect(url_for('login_page'))
+        flash("Please login first!", "warning")
+        return redirect(url_for('login'))  # এখানে 'login_page' -> 'login'
 
     quantity = request.form.get('quantity', 1)
     try:
@@ -135,12 +135,12 @@ def add_to_cart(product_id):
     if not product:
         cursor.close()
         conn.close()
-        flash("Product not found!")
+        flash("Product not found!", "warning")
         return redirect(url_for('dashboard_page'))
 
-    # ✅ Stock check
+    # Stock check
     if quantity > product['stock']:
-        flash(f"Only {product['stock']} items available in stock.")
+        flash(f"Only {product['stock']} items available in stock.", "warning")
         cursor.close()
         conn.close()
         return redirect(url_for('dashboard_page'))
@@ -161,9 +161,9 @@ def add_to_cart(product_id):
     if existing:
         new_quantity = existing['quantity'] + quantity
 
-        # ✅ Stock check for updated quantity
+        # Stock check for updated quantity
         if new_quantity > product['stock']:
-            flash(f"Cannot add more than {product['stock']} items to cart.")
+            flash(f"Cannot add more than {product['stock']} items to cart.", "warning")
             cursor.close()
             conn.close()
             return redirect(url_for('cart_page'))
@@ -185,7 +185,7 @@ def add_to_cart(product_id):
     cursor.close()
     conn.close()
 
-    flash(f"Added {quantity} x {product_name} to your cart.")
+    flash(f"Added {quantity} x {product_name} to your cart.", "success")
     return redirect(url_for('cart_page'))
 
 
@@ -271,8 +271,8 @@ def update_cart_quantity():
     conn.commit()
     cursor.close()
     conn.close()
+    return jsonify({'success': True, 'new_total': int(total_price)})
 
-    return jsonify({'success': True, 'new_total': f"{total_price:.2f}"})
 
 
 

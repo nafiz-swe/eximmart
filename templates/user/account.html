@@ -115,7 +115,7 @@
         <p><strong>Payment Method:</strong> {{ order.payment_method|capitalize }}</p>
         <p><strong>Total Categories:</strong> {{ order.total_categories }}</p>
         <p><strong>Total Quantity:</strong> {{ order.total_quantity }}</p>
-        <p><strong>Total Price:</strong> ${{ "%.2f"|format(order.total_price) }}</p>
+        <p><strong>Total Price:</strong> BDT {{ order.total_price }}৳</p>
 
         {% set status = order.order_status.lower().replace(' ', '_') %}
         {% set current_index = steps.index(status) if status in steps else 0 %}

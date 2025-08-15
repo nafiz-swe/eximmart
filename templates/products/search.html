@@ -35,7 +35,7 @@
       </div>
 
       
-<div class="row products-card px-0 mt-5 mb-4 py-2">
+<div class="row products-card mt-5 mb-4 py-2">
   {% for product in products %}
     <div class="product-col">
       <div class="card h-100">
@@ -50,7 +50,7 @@
 
         <div class="card-body text-center">
           <div class="product-price mb-2">
-            ${{ '%.2f'|format(product.price) }}
+            BDT {{ product.price }}৳
           </div>
 
           <!-- Title clickable with clamp -->

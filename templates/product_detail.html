@@ -74,7 +74,7 @@
     <!-- Product Info -->
     <div class="col-md-6 product-info">
       <h3>{{ product.product_name }}</h3>
-      <h4 class="product-price mt-3 mb-4">${{ '%.2f'|format(product.price) }}</h4>
+      <h4 class="product-price mt-3 mb-4">BDT {{ product.price }}৳</h4>
 
       <!-- Brand Name -->
       <div class="input-group mb-2" style="width:225px;">
@@ -134,8 +134,9 @@
 
   <!-- Total Price -->
   <div class="mb-3" id="totalPrice" data-price="{{ product.price | default(0) }}">
-    Total: ${{ '%.2f'|format(product.price or 0) }}
+    Total: BDT {{ product.price or 0 }}৳
   </div>
+
 
   <!-- Buttons wrapper: flex দিয়ে পাশাপাশি রাখা -->
   <div style="display: flex; gap: 10px; align-items: center;">
@@ -200,9 +201,10 @@ function updateTotalPrice() {
   } else {
     hideErrorMessage();
   }
-  const total = (price * qty).toFixed(2);
-  totalPriceDiv.textContent = `Total Price: $${total}`;
+  const total = price * qty; // এখানে আর দশমিক ফিক্স করিনি
+  totalPriceDiv.textContent = `Total Price: BDT ${total}৳`;
 }
+
 
 // Decrease quantity
 document.getElementById("decrease").addEventListener("click", function () {
